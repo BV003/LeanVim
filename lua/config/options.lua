@@ -21,7 +21,9 @@ opt.hlsearch = true         -- 高亮所有匹配
 opt.incsearch = true        -- 边输入边跳转到匹配
 
 -- 显示
-opt.wrap = false            -- 长行不自动折行
+opt.wrap = true             -- 长行自动折行显示（类似 VSCode 的自动换行，文件内容不变）
+opt.linebreak = true        -- 在空格处折行，不把单词拆开
+opt.breakindent = true      -- 折行部分保持原来的缩进
 opt.scrolloff = 8           -- 光标上下至少保留 8 行
 opt.sidescrolloff = 8
 opt.termguicolors = true    -- 启用真彩色，主题需要

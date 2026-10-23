@@ -26,6 +26,14 @@ map("n", "<leader>-", "<cmd>split<cr>", { desc = "上下分屏" })
 map("v", "<", "<gv", { desc = "向左缩进" })
 map("v", ">", ">gv", { desc = "向右缩进" })
 
+-- 长行折行时，j/k 和 ↑/↓ 按屏幕上的行移动（类似 VSCode）；带数字（如 5j）时仍按真实行跳
+map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, desc = "下移一行" })
+map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, desc = "上移一行" })
+map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { expr = true, desc = "下移一行" })
+map({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { expr = true, desc = "上移一行" })
+map("i", "<Down>", "<C-o>gj", { desc = "下移一行" })
+map("i", "<Up>", "<C-o>gk", { desc = "上移一行" })
+
 -- 可视模式下用 J/K 上下移动选中的行（类似 VSCode 的 Alt+↑/↓）
 map("v", "J", ":m '>+1<cr>gv=gv", { desc = "选中行下移" })
 map("v", "K", ":m '<-2<cr>gv=gv", { desc = "选中行上移" })
