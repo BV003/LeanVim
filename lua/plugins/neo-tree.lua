@@ -45,7 +45,3 @@ require("neo-tree").setup({
 -- 空格 e：打开/关闭文件树（类似 VSCode 的 Ctrl+B）
 -- 平时用模糊搜索打开文件（见 fzf-lua.lua），需要看目录结构或新建文件时再打开文件树
 vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "文件树" })
-
--- 空格 g：打开/关闭 Git 改动列表（类似 VSCode 的源代码管理面板，含新建的文件）
--- 列表内：A 暂存全部，ga/gu 暂存/取消暂存，gr 撤销改动，gg 提交并推送
-vim.keymap.set("n", "<leader>g", "<cmd>Neotree toggle git_status<cr>", { desc = "Git 改动列表" })
