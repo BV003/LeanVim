@@ -4,10 +4,6 @@
       "rev": "5dca84ef44f37b960a128a43d044ee348ff86fb4",
       "src": "https://github.com/ibhagwan/fzf-lua"
     },
-    "mini.starter": {
-      "rev": "aa5c1eacdac80b09786d5be4e58e2b28c5ebb646",
-      "src": "https://github.com/nvim-mini/mini.starter"
-    },
     "neo-tree.nvim": {
       "rev": "1a14083046d96e88e361d1da00761c40d45012f3",
       "src": "https://github.com/nvim-neo-tree/neo-tree.nvim",
