@@ -43,16 +43,5 @@ require("neo-tree").setup({
 })
 
 -- 空格 e：打开/关闭文件树（类似 VSCode 的 Ctrl+B）
+-- 平时用模糊搜索打开文件（见 fzf-lua.lua），需要看目录结构或新建文件时再打开文件树
 vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "文件树" })
-
--- 启动时在左侧常驻打开文件树，光标留在编辑区
-vim.api.nvim_create_autocmd("VimEnter", {
-  group = vim.api.nvim_create_augroup("neotree_autoopen", { clear = true }),
-  callback = function()
-    -- 打开的是目录（如 nvim .）时交给 hijack_netrw 处理，这里只处理普通情况
-    if vim.fn.argc() == 1 and vim.fn.isdirectory(vim.fn.argv(0)) == 1 then
-      return
-    end
-    vim.cmd("Neotree show")
-  end,
-})

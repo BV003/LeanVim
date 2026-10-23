@@ -11,3 +11,4 @@ require("config.autocmds")  -- 加载 lua/config/autocmds.lua
 
 -- 插件：每个插件一个文件，放在 lua/plugins/ 下
 require("plugins.neo-tree")
+require("plugins.fzf-lua")
