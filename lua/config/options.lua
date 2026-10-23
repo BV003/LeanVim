@@ -42,6 +42,7 @@ opt.splitbelow = true
 opt.undofile = true         -- 持久化撤销历史，关掉文件再打开仍能 u 撤销
 opt.swapfile = false        -- 不生成 .swp 交换文件
 opt.confirm = true          -- 有未保存修改时退出，弹出确认而不是报错
+opt.autoread = true         -- 文件被外部修改（如 AI agent）且本地没有未保存修改时，自动重新读取
 
 -- 响应速度
 opt.updatetime = 250        -- 停止输入 250ms 后触发事件（之后 LSP 悬浮提示会用到）
