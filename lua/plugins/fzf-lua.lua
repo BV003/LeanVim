@@ -35,3 +35,23 @@ map("n", "<leader>fw", fzf.grep_cword, { desc = "搜索光标下的单词" })
 
 -- 继续上一次的搜索
 map("n", "<leader>fR", fzf.resume, { desc = "继续上一次搜索" })
+
+-- 切换项目：列出 ~/Documents/codehome 下的目录和 nvim 配置目录
+-- 选中后切换工作目录（之后的搜索、文件树都以它为准），并弹出文件搜索
+map("n", "<leader>p", function()
+  local projects = {}
+  for _, dir in ipairs(vim.fn.globpath("~/Documents/codehome", "*/", false, true)) do
+    table.insert(projects, vim.fn.fnamemodify(dir:gsub("/$", ""), ":~"))
+  end
+  table.insert(projects, "~/.config/nvim")
+
+  fzf.fzf_exec(projects, {
+    prompt = "项目> ",
+    actions = {
+      ["enter"] = function(selected)
+        vim.cmd.cd(selected[1])
+        fzf.files()
+      end,
+    },
+  })
+end, { desc = "切换项目" })
