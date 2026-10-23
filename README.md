@@ -7,7 +7,13 @@ My personal Neovim configuration.
 编辑和 AI agent 分开放在两个终端窗口里，不互相嵌套。
 
 - **窗口 1：nvim**，负责看代码和编辑
-- **窗口 2：herdr**，只用来运行 code agents，不在里面开 nvim
+- **窗口 2：herdr**，用来运行 code agents 和实验命令，不在里面开 nvim
+
+## 实验指令放 herdr
+
+实验、训练、评测这类终端命令都放在 herdr 里跑，不放进 nvim 的 `:terminal`。nvim 只负责编辑；长任务在 herdr 里能持续运行、方便看日志，agent 也能直接读取结果。
+
+只有极短、和当前编辑动作强相关的命令（比如格式化当前文件）可以留在 nvim 里执行。
 
 ## 快捷键
 
