@@ -1,42 +1,42 @@
--- 快捷键（相当于 VSCode 的 keybindings.json）
--- 格式：vim.keymap.set(模式, 按键, 动作, { desc = 说明 })
--- 模式："n" 普通模式  "i" 插入模式  "v" 可视模式  "t" 终端模式
--- <leader> 是空格键（在 init.lua 中设置）
+-- Keymaps (equivalent to VSCode's keybindings.json)
+-- Format: vim.keymap.set(mode, key, action, { desc = description })
+-- Modes: "n" normal  "i" insert  "v" visual  "t" terminal
+-- <leader> is the space key (set in init.lua)
 local map = vim.keymap.set
 
--- 保存 / 退出
-map("n", "<leader>w", "<cmd>w<cr>", { desc = "保存文件" })
-map("n", "<leader>q", "<cmd>q<cr>", { desc = "关闭窗口" })
-map({ "n", "i", "v" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "保存文件（VSCode 习惯）" })
+-- Save / quit
+map("n", "<leader>w", "<cmd>w<cr>", { desc = "Save file" })
+map("n", "<leader>q", "<cmd>q<cr>", { desc = "Close window" })
+map({ "n", "i", "v" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file (VSCode habit)" })
 
--- 按 Esc 清除搜索高亮
-map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "清除搜索高亮" })
+-- Press Esc to clear search highlight
+map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
 
--- 在分屏窗口之间移动：Ctrl + h/j/k/l
-map("n", "<C-h>", "<C-w>h", { desc = "移到左边窗口" })
-map("n", "<C-j>", "<C-w>j", { desc = "移到下边窗口" })
-map("n", "<C-k>", "<C-w>k", { desc = "移到上边窗口" })
-map("n", "<C-l>", "<C-w>l", { desc = "移到右边窗口" })
+-- Move between split windows: Ctrl + h/j/k/l
+map("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
+map("n", "<C-j>", "<C-w>j", { desc = "Move to lower window" })
+map("n", "<C-k>", "<C-w>k", { desc = "Move to upper window" })
+map("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 
--- 分屏
-map("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "左右分屏" })
-map("n", "<leader>-", "<cmd>split<cr>", { desc = "上下分屏" })
+-- Splits
+map("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Split left/right" })
+map("n", "<leader>-", "<cmd>split<cr>", { desc = "Split top/bottom" })
 
--- 可视模式下缩进后保持选中，可以连续按 > 或 <
-map("v", "<", "<gv", { desc = "向左缩进" })
-map("v", ">", ">gv", { desc = "向右缩进" })
+-- Keep the selection after indenting in visual mode, so > or < can be repeated
+map("v", "<", "<gv", { desc = "Indent left" })
+map("v", ">", ">gv", { desc = "Indent right" })
 
--- 长行折行时，j/k 和 ↑/↓ 按屏幕上的行移动（类似 VSCode）；带数字（如 5j）时仍按真实行跳
-map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, desc = "下移一行" })
-map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, desc = "上移一行" })
-map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { expr = true, desc = "下移一行" })
-map({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { expr = true, desc = "上移一行" })
-map("i", "<Down>", "<C-o>gj", { desc = "下移一行" })
-map("i", "<Up>", "<C-o>gk", { desc = "上移一行" })
+-- On wrapped lines, j/k and ↑/↓ move by screen line (like VSCode); with a count (e.g. 5j) they still move by real line
+map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, desc = "Move down one line" })
+map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, desc = "Move up one line" })
+map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { expr = true, desc = "Move down one line" })
+map({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { expr = true, desc = "Move up one line" })
+map("i", "<Down>", "<C-o>gj", { desc = "Move down one line" })
+map("i", "<Up>", "<C-o>gk", { desc = "Move up one line" })
 
--- 可视模式下用 J/K 上下移动选中的行（类似 VSCode 的 Alt+↑/↓）
-map("v", "J", ":m '>+1<cr>gv=gv", { desc = "选中行下移" })
-map("v", "K", ":m '<-2<cr>gv=gv", { desc = "选中行上移" })
+-- Use J/K in visual mode to move selected lines up/down (like VSCode's Alt+↑/↓)
+map("v", "J", ":m '>+1<cr>gv=gv", { desc = "Move selected lines down" })
+map("v", "K", ":m '<-2<cr>gv=gv", { desc = "Move selected lines up" })
 
--- 内置终端：按 Esc Esc 退出终端的输入模式
-map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "退出终端模式" })
+-- Built-in terminal: press Esc Esc to leave terminal input mode
+map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })

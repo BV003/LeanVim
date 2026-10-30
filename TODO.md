@@ -1,3 +1,3 @@
 # TODO
-- [x] herder布局进行完善，比如如何切换会话而不是agent，让会话利用更多空间
+- [x] Improve the herder layout, e.g. how to switch sessions rather than agents, and let sessions use more space
 - [x] use git control, add git control tool in herdr part

@@ -1,28 +1,28 @@
--- 自动命令：某个事件发生时自动执行
--- 查看所有事件：:help events
+-- Autocommands: run automatically when an event fires
+-- List all events: :help events
 local autocmd = vim.api.nvim_create_autocmd
 local group = vim.api.nvim_create_augroup("user_config", { clear = true })
 
--- 检查文件是否被外部修改（如在另一个终端运行的 AI agent），配合 options.lua 中的 autoread
--- 触发时机：切回 nvim 窗口、切换文件、停止操作 updatetime（250ms）后
+-- Check whether files were changed externally (e.g. an AI agent in another terminal); works with autoread in options.lua
+-- Fires when: returning to the nvim window, switching files, or after being idle for updatetime (250ms)
 autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
   group = group,
   callback = function()
-    if vim.fn.getcmdwintype() == "" then   -- 命令行窗口中不能执行 checktime
+    if vim.fn.getcmdwintype() == "" then   -- checktime can't run in the command-line window
       vim.cmd("checktime")
     end
   end,
 })
 
--- 文件被重新读取后提示一下，避免没注意到内容变了
+-- Notify after a file is reloaded, so the change doesn't go unnoticed
 autocmd("FileChangedShellPost", {
   group = group,
   callback = function(args)
-    vim.notify("文件已在外部修改，已重新读取：" .. vim.fn.fnamemodify(args.file, ":t"), vim.log.levels.INFO)
+    vim.notify("File changed externally, reloaded: " .. vim.fn.fnamemodify(args.file, ":t"), vim.log.levels.INFO)
   end,
 })
 
--- 复制时短暂高亮被复制的文本
+-- Briefly highlight yanked text
 autocmd("TextYankPost", {
   group = group,
   callback = function()
@@ -30,7 +30,7 @@ autocmd("TextYankPost", {
   end,
 })
 
--- 重新打开文件时，光标回到上次离开的位置
+-- When reopening a file, return the cursor to its last position
 autocmd("BufReadPost", {
   group = group,
   callback = function(args)
@@ -42,7 +42,7 @@ autocmd("BufReadPost", {
   end,
 })
 
--- 部分语言使用 2 空格缩进
+-- Some languages use 2-space indentation
 autocmd("FileType", {
   group = group,
   pattern = { "lua", "javascript", "typescript", "html", "css", "json", "yaml", "markdown" },

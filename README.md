@@ -2,118 +2,118 @@
 
 My personal Neovim configuration.
 
-## 工作方式：两个终端分离
+## Workflow: two separate terminals
 
-编辑和 AI agent 分开放在两个终端窗口里，不互相嵌套。
+Editing and AI agents live in two separate terminal windows, not nested in each other.
 
-- **窗口 1：nvim**，负责看代码和编辑
-- **窗口 2：herdr**，用来运行 code agents 和实验命令，不在里面开 nvim
+- **Window 1: nvim**, for reading and editing code
+- **Window 2: herdr**, for running code agents and experiment commands; nvim is not opened there
 
-## 实验指令放 herdr
+## Experiment commands go in herdr
 
-实验、训练、评测这类终端命令都放在 herdr 里跑，不放进 nvim 的 `:terminal`。nvim 只负责编辑；长任务在 herdr 里能持续运行、方便看日志，agent 也能直接读取结果。
+Terminal commands such as experiments, training and evaluation all run in herdr, not in nvim's `:terminal`. nvim is only for editing; in herdr, long tasks keep running, logs are easy to check, and agents can read the results directly.
 
-只有极短、和当前编辑动作强相关的命令（比如格式化当前文件）可以留在 nvim 里执行。
+Only very short commands closely tied to the current edit (such as formatting the current file) may run inside nvim.
 
-## Vim 最基本的操作
+## Basic Vim operations
 
-按键前先确认在普通模式（按 `Esc`），输入法切到英文。
+Before pressing keys, make sure you are in normal mode (press `Esc`) and the input method is set to English.
 
-| 按键 | 作用 |
+| Key | Action |
 |---|---|
-| `i` / `o` | 在光标前插入 / 在下方新开一行插入 |
-| `Esc` | 回到普通模式 |
-| `:w` / `:q` / `:q!` | 保存 / 退出 / 不保存退出 |
-| `h j k l` | 左 下 上 右 |
-| `w` / `b` | 下一个 / 上一个单词 |
-| `0` / `$` | 行首 / 行尾 |
-| `gg` / `G` | 文件开头 / 结尾 |
-| `/文字` 然后 `n` | 搜索，跳到下一个 |
-| `x` | 删除一个字符 |
-| `dd` / `yy` / `p` | 删除一行 / 复制一行 / 粘贴 |
-| `ciw` | 改掉光标所在的单词 |
-| `u` / `Ctrl+r` | 撤销 / 重做 |
-| `.` | 重复上一次修改 |
-| `v` | 进入选择模式，再用 `d` 删除或 `y` 复制 |
+| `i` / `o` | Insert before cursor / open a new line below and insert |
+| `Esc` | Return to normal mode |
+| `:w` / `:q` / `:q!` | Save / quit / quit without saving |
+| `h j k l` | Left, down, up, right |
+| `w` / `b` | Next / previous word |
+| `0` / `$` | Start / end of line |
+| `gg` / `G` | Start / end of file |
+| `/text` then `n` | Search, jump to next match |
+| `x` | Delete a character |
+| `dd` / `yy` / `p` | Delete a line / copy a line / paste |
+| `ciw` | Change the word under the cursor |
+| `u` / `Ctrl+r` | Undo / redo |
+| `.` | Repeat the last change |
+| `v` | Enter visual mode, then `d` to delete or `y` to copy |
 
-### 学习顺序
+### Learning order
 
-**第一档**
+**Tier 1**
 
-- `i` / `Esc`：进出插入模式
-- `:w` / `:q` / `:wq` / `:q!`：保存、退出、不保存退出
-- `u` / `Ctrl+r`：撤销、重做
-- `dd` / `yy` / `p`：删行、复制行、粘贴
+- `i` / `Esc`: enter and leave insert mode
+- `:w` / `:q` / `:wq` / `:q!`: save, quit, save and quit, quit without saving
+- `u` / `Ctrl+r`: undo, redo
+- `dd` / `yy` / `p`: delete line, copy line, paste
 
-**第二档**
+**Tier 2**
 
-- `ciw`、`ci"`、`ci(`：改单词、改引号里、改括号里
-- `.`：重复上一次修改
-- `/` / `n`：搜索、下一个
-- `o` / `O`：在下方/上方新开一行并进入插入
-- `A` / `I`：跳到行尾/行首并插入
+- `ciw`, `ci"`, `ci(`: change word, inside quotes, inside parentheses
+- `.`: repeat the last change
+- `/` / `n`: search, next match
+- `o` / `O`: open a new line below/above and insert
+- `A` / `I`: jump to end/start of line and insert
 
-**第三档**
+**Tier 3**
 
-- `gg` / `G`：跳到文件开头/结尾
-- `:%s/旧/新/g`：全文替换
+- `gg` / `G`: jump to start/end of file
+- `:%s/old/new/g`: replace throughout the file
 
-### 光标跳跃
+### Cursor jumps
 
-跳行：
+Between lines:
 
-| 按键 | 作用 |
+| Key | Action |
 |---|---|
-| `5j` / `5k` | 往下 / 往上跳 5 行 |
-| `:42` | 跳到第 42 行 |
-| `gg` / `G` | 文件开头 / 结尾 |
-| `Ctrl+d` / `Ctrl+u` | 往下 / 往上翻半页 |
-| `{` / `}` | 上一个 / 下一个空行 |
+| `5j` / `5k` | Jump 5 lines down / up |
+| `:42` | Jump to line 42 |
+| `gg` / `G` | Start / end of file |
+| `Ctrl+d` / `Ctrl+u` | Half a page down / up |
+| `{` / `}` | Previous / next blank line |
 
-行内：
+Within a line:
 
-| 按键 | 作用 |
+| Key | Action |
 |---|---|
-| `0` / `^` / `$` | 行首 / 第一个非空字符 / 行尾 |
-| `w` / `b` / `e` | 下一个单词 / 上一个单词 / 单词结尾 |
-| `f字符` / `F字符` | 往后 / 往前跳到该字符 |
-| `t字符` | 跳到该字符前一格 |
-| `;` / `,` | 重复上一次 `f`/`t`，向后 / 向前 |
-| `a` | 在光标后插入 |
-| `r字符` | 替换一个字符 |
+| `0` / `^` / `$` | Start of line / first non-blank character / end of line |
+| `w` / `b` / `e` | Next word / previous word / end of word |
+| `f<char>` / `F<char>` | Jump forward / backward to that character |
+| `t<char>` | Jump to just before that character |
+| `;` / `,` | Repeat the last `f`/`t`, forward / backward |
+| `a` | Insert after cursor |
+| `r<char>` | Replace a character |
 
-## 快捷键
+## Keymaps
 
-leader 键是空格。
+The leader key is Space.
 
-### 搜索（fzf-lua）
+### Search (fzf-lua)
 
-| 按键 | 作用 |
+| Key | Action |
 |---|---|
-| `空格 空格` / `空格 f f` | 搜文件名 |
-| `空格 /` / `空格 f g` | 搜文件内容 |
-| `空格 f b` | 已打开的文件 |
-| `空格 f r` | 最近打开的文件 |
-| `空格 f w` | 搜光标下的单词 |
-| `空格 f R` | 继续上一次搜索 |
-| `空格 p` | 切换项目（nvim 配置，加上本机 `lua/config/local.lua` 里写的项目；该文件不进 git，新电脑需自己新建） |
+| `Space Space` / `Space f f` | Search file names |
+| `Space /` / `Space f g` | Search file contents |
+| `Space f b` | Open files |
+| `Space f r` | Recent files |
+| `Space f w` | Search word under cursor |
+| `Space f R` | Resume last search |
+| `Space p` | Switch project (nvim config, plus projects in this machine's `lua/config/local.lua`; that file is not in git, so create it yourself on a new machine) |
 
-### 文件树（neo-tree）
+### File tree (neo-tree)
 
-| 按键 | 作用 |
+| Key | Action |
 |---|---|
-| `空格 e` | 打开 / 关闭文件树 |
+| `Space e` | Toggle the file tree |
 
-### 编辑与窗口
+### Editing and windows
 
-| 按键 | 作用 |
+| Key | Action |
 |---|---|
-| `空格 w` / `Ctrl+s` | 保存 |
-| `空格 q` | 关闭窗口 |
-| `空格 \|` / `空格 -` | 左右分屏 / 上下分屏 |
-| `Ctrl+h/j/k/l` | 在窗口之间移动 |
-| `Esc` | 清除搜索高亮 |
-| `j` / `k`、`↓` / `↑` | 长行折行时按屏幕上的行移动（`5j` 仍按真实行跳） |
-| 可视模式 `<` / `>` | 缩进后保持选中 |
-| 可视模式 `J` / `K` | 选中行下移 / 上移 |
-| 终端模式 `Esc Esc` | 退出终端模式 |
+| `Space w` / `Ctrl+s` | Save |
+| `Space q` | Close window |
+| `Space \|` / `Space -` | Split left/right / split top/bottom |
+| `Ctrl+h/j/k/l` | Move between windows |
+| `Esc` | Clear search highlight |
+| `j` / `k`, `↓` / `↑` | Move by screen line on wrapped lines (`5j` still moves by real line) |
+| Visual mode `<` / `>` | Indent and keep the selection |
+| Visual mode `J` / `K` | Move selected lines down / up |
+| Terminal mode `Esc Esc` | Exit terminal mode |

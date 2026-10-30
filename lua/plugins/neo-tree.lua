@@ -1,17 +1,17 @@
--- 文件树：neo-tree（类似 VSCode 左侧资源管理器）
--- 仓库：https://github.com/nvim-neo-tree/neo-tree.nvim
--- vim.pack 是 nvim 0.12 自带的插件管理器，插件安装在 ~/.local/share/nvim/site/pack/core/opt/
+-- File tree: neo-tree (like VSCode's Explorer sidebar)
+-- Repo: https://github.com/nvim-neo-tree/neo-tree.nvim
+-- vim.pack is the plugin manager built into nvim 0.12; plugins are installed in ~/.local/share/nvim/site/pack/core/opt/
 vim.pack.add({
-  "https://github.com/nvim-lua/plenary.nvim",          -- 依赖：常用 Lua 工具函数
-  "https://github.com/MunifTanjim/nui.nvim",           -- 依赖：UI 组件
+  "https://github.com/nvim-lua/plenary.nvim",          -- Dependency: common Lua utility functions
+  "https://github.com/MunifTanjim/nui.nvim",           -- Dependency: UI components
   { src = "https://github.com/nvim-neo-tree/neo-tree.nvim", version = "v3.x" },
 })
 
 require("neo-tree").setup({
-  close_if_last_window = true,     -- 只剩文件树时自动退出 nvim
+  close_if_last_window = true,     -- Quit nvim automatically when only the file tree is left
   popup_border_style = "rounded",
 
-  -- 当前没有安装 Nerd Font，图标先用普通字符
+  -- No Nerd Font installed for now, so use plain characters as icons
   default_component_configs = {
     icon = {
       folder_closed = "▸",
@@ -32,16 +32,16 @@ require("neo-tree").setup({
   },
 
   filesystem = {
-    follow_current_file = { enabled = true },   -- 切换文件时，树自动定位到当前文件
-    use_libuv_file_watcher = true,              -- 磁盘上文件变化时自动刷新
-    hijack_netrw_behavior = "open_current",     -- nvim . 打开目录时用 neo-tree 代替 netrw
+    follow_current_file = { enabled = true },   -- Reveal the current file in the tree when switching files
+    use_libuv_file_watcher = true,              -- Refresh automatically when files change on disk
+    hijack_netrw_behavior = "open_current",     -- Use neo-tree instead of netrw for directories (nvim .)
     filtered_items = {
-      hide_dotfiles = false,                    -- 显示 .gitignore 等点文件
+      hide_dotfiles = false,                    -- Show dotfiles such as .gitignore
       hide_gitignored = true,
     },
   },
 })
 
--- 空格 e：打开/关闭文件树（类似 VSCode 的 Ctrl+B）
--- 平时用模糊搜索打开文件（见 fzf-lua.lua），需要看目录结构或新建文件时再打开文件树
-vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "文件树" })
+-- Space e: toggle the file tree (like VSCode's Ctrl+B)
+-- Normally open files with fuzzy search (see fzf-lua.lua); use the tree to view the directory structure or create files
+vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "File tree" })
