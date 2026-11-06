@@ -16,25 +16,14 @@ require("fzf-lua").setup({
 local fzf = require("fzf-lua")
 local map = vim.keymap.set
 
--- Search file names (like Ctrl+P); ignores files in .gitignore by default
-map("n", "<leader><leader>", fzf.files, { desc = "Search files" })
-map("n", "<leader>ff", fzf.files, { desc = "Search files" })
+-- Space f: find files by name (like Ctrl+P); ignores files in .gitignore by default
+map("n", "<leader>f", fzf.files, { desc = "Find files" })
 
--- Search the contents of all files (like Ctrl+Shift+F), updating as you type
-map("n", "<leader>/", fzf.live_grep, { desc = "Search contents" })
-map("n", "<leader>fg", fzf.live_grep, { desc = "Search contents" })
+-- Space c: search file contents (like Ctrl+Shift+F), updating as you type
+map("n", "<leader>c", fzf.live_grep, { desc = "Search contents" })
 
--- Search open files
-map("n", "<leader>fb", fzf.buffers, { desc = "Open files" })
-
--- Recently opened files
-map("n", "<leader>fr", fzf.oldfiles, { desc = "Recent files" })
-
--- Search the word under the cursor
-map("n", "<leader>fw", fzf.grep_cword, { desc = "Search word under cursor" })
-
--- Resume the last search
-map("n", "<leader>fR", fzf.resume, { desc = "Resume last search" })
+-- Space r: recently opened files
+map("n", "<leader>r", fzf.oldfiles, { desc = "Recent files" })
 
 -- Switch project: lists the nvim config directory plus projects set in this machine's lua/config/local.lua
 -- local.lua only holds paths specific to this machine and is gitignored; if missing, only the nvim config directory is listed

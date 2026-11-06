@@ -15,3 +15,4 @@ require("plugins.lualine")     -- Bottom status line
 require("plugins.alpha")       -- Start page
 require("plugins.neo-tree")
 require("plugins.fzf-lua")
+require("plugins.git")         -- gitsigns + diffview
