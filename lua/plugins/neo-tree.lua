@@ -70,10 +70,26 @@ vim.api.nvim_create_autocmd("MenuPopup", {
   end,
 })
 
+local function close_git_panel_in_tab()
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "gitsigns-diff" then
+      local prev = vim.fn.tabpagenr("#")
+      local prev_tab = prev > 0 and vim.api.nvim_list_tabpages()[prev] or nil
+      vim.api.nvim_set_current_win(win)
+      vim.cmd("normal q")
+      if prev_tab and vim.api.nvim_tabpage_is_valid(prev_tab) then
+        vim.api.nvim_set_current_tabpage(prev_tab)
+      end
+      return
+    end
+  end
+end
+
 vim.keymap.set("n", "<leader>e", function()
   if vim.bo.filetype == "neo-tree" then
     vim.cmd("Neotree close")
   else
+    close_git_panel_in_tab()
     vim.cmd("Neotree focus")
   end
 end, { desc = "File tree" })
