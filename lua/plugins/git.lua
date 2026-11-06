@@ -35,3 +35,13 @@ vim.keymap.set("n", "<leader>g", function()
     vim.notify("Not in a git repo (switch to a project with Space p first)", vim.log.levels.WARN)
   end
 end, { desc = "Git changes panel" })
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("user_git_panel", { clear = true }),
+  pattern = "gitsigns-diff",
+  callback = function(args)
+    vim.schedule(function()
+      pcall(vim.keymap.del, "n", "<Space>", { buffer = args.buf })
+    end)
+  end,
+})

@@ -38,4 +38,4 @@ opt.confirm = true
 opt.autoread = true
 
 opt.updatetime = 250
-opt.timeoutlen = 400
+opt.timeoutlen = 1000

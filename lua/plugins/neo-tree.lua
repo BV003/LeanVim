@@ -21,7 +21,10 @@ require("neo-tree").setup({
       },
     },
   },
-  window = { width = 30 },
+  window = {
+    width = 30,
+    mappings = { ["<space>"] = "none" },
+  },
   filesystem = {
     follow_current_file = { enabled = true },
     use_libuv_file_watcher = true,
