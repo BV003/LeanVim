@@ -1,53 +1,38 @@
--- Fuzzy search: fzf-lua (like VSCode's Ctrl+P and global search)
--- Repo: https://github.com/ibhagwan/fzf-lua
--- Requires CLI tools: fzf (required), fd (file names), rg (file contents)
-vim.pack.add({
-  "https://github.com/ibhagwan/fzf-lua",
-})
+vim.pack.add({ "https://github.com/ibhagwan/fzf-lua" })
 
-require("fzf-lua").setup({
-  -- No Nerd Font installed for now, so don't show file icons
+local fzf = require("fzf-lua")
+local map = vim.keymap.set
+
+fzf.setup({
   defaults = {
     file_icons = false,
     git_icons = false,
   },
 })
 
-local fzf = require("fzf-lua")
-local map = vim.keymap.set
-
--- Space f: find files by name (like Ctrl+P); ignores files in .gitignore by default
 map("n", "<leader>f", fzf.files, { desc = "Find files" })
-
--- Space c: search file contents (like Ctrl+Shift+F), updating as you type
 map("n", "<leader>c", fzf.live_grep, { desc = "Search contents" })
-
--- Space r: recently opened files
 map("n", "<leader>r", fzf.oldfiles, { desc = "Recent files" })
 
--- Switch project: lists the nvim config directory plus projects set in this machine's lua/config/local.lua
--- local.lua only holds paths specific to this machine and is gitignored; if missing, only the nvim config directory is listed
--- On selection, change the working directory (later searches and the file tree follow it) and open file search
-map("n", "<leader>p", function()
-  local ok, local_config = pcall(require, "config.local")
+local function list_projects()
+  local ok, config = pcall(require, "config.local")
   if not ok then
-    local_config = {}
+    config = {}
   end
 
   local projects = {}
-  -- Each subdirectory of a project_roots directory counts as a project
-  for _, root in ipairs(local_config.project_roots or {}) do
+  for _, root in ipairs(config.project_roots or {}) do
     for _, dir in ipairs(vim.fn.globpath(root, "*/", false, true)) do
-      table.insert(projects, vim.fn.fnamemodify(dir:gsub("/$", ""), ":~"))
+      table.insert(projects, vim.fn.fnamemodify((dir:gsub("/$", "")), ":~"))
     end
   end
   table.insert(projects, "~/.config/nvim")
-  -- projects holds individually added projects
-  for _, dir in ipairs(local_config.projects or {}) do
-    table.insert(projects, dir)
-  end
+  vim.list_extend(projects, config.projects or {})
+  return projects
+end
 
-  fzf.fzf_exec(projects, {
+map("n", "<leader>p", function()
+  fzf.fzf_exec(list_projects(), {
     prompt = "Project> ",
     actions = {
       ["enter"] = function(selected)
