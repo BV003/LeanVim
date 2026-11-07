@@ -16,7 +16,7 @@ section.buttons.val = {
   dashboard.button("f", "> find file", "<cmd>FzfLua files<cr>"),
   dashboard.button("c", "> search contents", "<cmd>FzfLua live_grep<cr>"),
   dashboard.button("r", "> recent files", "<cmd>FzfLua oldfiles<cr>"),
-  dashboard.button("p", "> switch project", " p"),
+  dashboard.button("p", "> switch project", "<cmd>Projects<cr>"),
   dashboard.button("e", "> file tree", "<cmd>Neotree toggle<cr>"),
   dashboard.button("q", "> quit", "<cmd>qa<cr>"),
 }

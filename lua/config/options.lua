@@ -12,8 +12,6 @@ opt.smartindent = true
 
 opt.ignorecase = true
 opt.smartcase = true
-opt.hlsearch = true
-opt.incsearch = true
 
 opt.wrap = false
 opt.scrolloff = 8
@@ -33,7 +31,6 @@ opt.splitbelow = true
 opt.undofile = true
 opt.swapfile = false
 opt.confirm = true
-opt.autoread = true
 
 opt.updatetime = 250
 opt.timeoutlen = 1000

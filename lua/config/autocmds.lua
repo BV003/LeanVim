@@ -13,7 +13,7 @@ autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
 autocmd("FileChangedShellPost", {
   group = group,
   callback = function(args)
-    vim.notify("File changed externally, reloaded: " .. vim.fn.fnamemodify(args.file, ":t"), vim.log.levels.INFO)
+    vim.notify("File changed externally, reloaded: " .. vim.fn.fnamemodify(args.file, ":t"))
   end,
 })
 

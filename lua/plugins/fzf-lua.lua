@@ -31,7 +31,7 @@ local function list_projects()
   return projects
 end
 
-map("n", "<leader>p", function()
+local function switch_project()
   fzf.fzf_exec(list_projects(), {
     prompt = "Project> ",
     actions = {
@@ -41,4 +41,7 @@ map("n", "<leader>p", function()
       end,
     },
   })
-end, { desc = "Switch project" })
+end
+
+vim.api.nvim_create_user_command("Projects", switch_project, { desc = "Switch project" })
+map("n", "<leader>p", switch_project, { desc = "Switch project" })
