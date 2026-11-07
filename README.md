@@ -1,6 +1,6 @@
 # LeanVim
 
-A Neovim config with only what's necessary.
+Replace VSCode!
 
 ![LeanVim](assets/screenshot.png)
 
