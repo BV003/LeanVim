@@ -23,7 +23,14 @@ require("neo-tree").setup({
   },
   window = {
     width = 30,
-    mappings = { ["<space>"] = "none" },
+    mappings = {
+      ["<space>"] = "none",
+      ["Y"] = function(state)
+        local path = state.tree:get_node():get_id()
+        vim.fn.setreg("+", path)
+        vim.notify("Copied: " .. path)
+      end,
+    },
   },
   filesystem = {
     follow_current_file = { enabled = true },
@@ -41,10 +48,12 @@ vim.cmd([[
   nmenu 1.2 PopUp.New\ Folder   A
   nmenu 1.3 PopUp.Rename        r
   nmenu 1.4 PopUp.-tree-sep-    <Nop>
-  nmenu 1.5 PopUp.Delete\ File  d
+  nmenu 1.5 PopUp.Copy\ Path    Y
+  nmenu 1.6 PopUp.-tree-sep2-   <Nop>
+  nmenu 1.7 PopUp.Delete\ File  d
 ]])
 
-local tree_items = { [[New\ File]], [[New\ Folder]], [[Rename]], [[-tree-sep-]], [[Delete\ File]] }
+local tree_items = { [[New\ File]], [[New\ Folder]], [[Rename]], [[-tree-sep-]], [[Copy\ Path]], [[-tree-sep2-]], [[Delete\ File]] }
 local default_items = {
   [[Inspect]], [[-1-]], [[Cut]], [[Copy]], [[Paste]], [[Delete]], [[Select\ All]], [[-2-]], [[How-to\ disable\ mouse]],
 }

@@ -15,9 +15,7 @@ opt.smartcase = true
 opt.hlsearch = true
 opt.incsearch = true
 
-opt.wrap = true
-opt.linebreak = true
-opt.breakindent = true
+opt.wrap = false
 opt.scrolloff = 8
 opt.sidescrolloff = 8
 opt.termguicolors = true
