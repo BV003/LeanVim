@@ -2,6 +2,8 @@
 
 A Neovim config with only what's necessary.
 
+![LeanVim](assets/screenshot.png)
+
 ## Requirements
 
 - Neovim 0.12+
