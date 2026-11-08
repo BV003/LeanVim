@@ -80,10 +80,6 @@ vim.api.nvim_create_autocmd("MenuPopup", {
 })
 
 vim.keymap.set("n", "<leader>e", function()
-  if vim.bo.filetype == "neo-tree" then
-    vim.cmd("Neotree close")
-  else
-    require("plugins.git").close_panel_in_tab()
-    vim.cmd("Neotree focus")
-  end
+  local closed_panel = require("plugins.git").close_panel_in_tab()
+  vim.cmd(closed_panel and "Neotree focus" or "Neotree toggle")
 end, { desc = "File tree" })

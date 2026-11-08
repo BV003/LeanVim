@@ -5,36 +5,34 @@ gitsigns.setup()
 
 local M = {}
 
-local function current_gitdir()
+local function in_git_repo()
   local file = vim.api.nvim_buf_get_name(0)
   local dir = (vim.bo.buftype == "" and file ~= "") and vim.fs.dirname(file) or vim.fn.getcwd()
   if vim.fn.isdirectory(dir) == 0 then
     dir = vim.fn.getcwd()
   end
-  local r = vim.system({ "git", "-C", dir, "rev-parse", "--absolute-git-dir" }, { text = true }):wait()
-  return r.code == 0 and vim.trim(r.stdout) or nil
+  return vim.system({ "git", "-C", dir, "rev-parse", "--git-dir" }):wait().code == 0
 end
 
--- Panel buffers are named gitsigns-diff://<gitdir>//<tab>; match by gitdir when given.
-local function find_panel(wins, gitdir)
+local function find_panel(wins)
   for _, win in ipairs(wins) do
-    local buf = vim.api.nvim_win_get_buf(win)
-    if vim.bo[buf].filetype == "gitsigns-diff"
-      and (not gitdir or vim.api.nvim_buf_get_name(buf):find("gitsigns-diff://" .. gitdir .. "//", 1, true))
-    then
+    if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "gitsigns-diff" then
       return win
     end
   end
 end
 
--- Close via the panel's own `q`, then return to the tab we came from.
 local function close_panel(panel)
-  local prev = vim.fn.tabpagenr("#")
-  local prev_tab = prev > 0 and vim.api.nvim_list_tabpages()[prev] or nil
+  local current = vim.api.nvim_get_current_tabpage()
+  local back = current
+  if vim.api.nvim_win_get_tabpage(panel) == current then
+    local prev = vim.fn.tabpagenr("#")
+    back = prev > 0 and vim.api.nvim_list_tabpages()[prev] or nil
+  end
   vim.api.nvim_set_current_win(panel)
   vim.cmd("normal q")
-  if prev_tab and vim.api.nvim_tabpage_is_valid(prev_tab) then
-    vim.api.nvim_set_current_tabpage(prev_tab)
+  if back and vim.api.nvim_tabpage_is_valid(back) then
+    vim.api.nvim_set_current_tabpage(back)
   end
 end
 
@@ -43,23 +41,17 @@ function M.close_panel_in_tab()
   if panel then
     close_panel(panel)
   end
+  return panel ~= nil
 end
 
 vim.keymap.set("n", "<leader>g", function()
-  if vim.bo.filetype == "gitsigns-diff" then
-    return close_panel(vim.api.nvim_get_current_win())
-  end
-
-  local gitdir = current_gitdir()
-  if not gitdir then
-    return vim.notify("Not in a git repo (switch to a project with Space p first)", vim.log.levels.WARN)
-  end
-
-  local panel = find_panel(vim.api.nvim_list_wins(), gitdir)
+  local panel = find_panel(vim.api.nvim_list_wins())
   if panel then
-    vim.api.nvim_set_current_win(panel)
-  else
+    close_panel(panel)
+  elseif in_git_repo() then
     gitsigns.diff(nil, nil, { diff = "unified" })
+  else
+    vim.notify("Not in a git repo (switch to a project with Space p first)", vim.log.levels.WARN)
   end
 end, { desc = "Git changes panel" })
 
