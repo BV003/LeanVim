@@ -10,6 +10,17 @@ autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
   end,
 })
 
+-- 外部修改时不弹 OK/Load 提示，直接加载磁盘版本；
+-- 若有未保存修改，重载可用 u 撤销找回（undoreload）。
+autocmd("FileChangedShell", {
+  group = group,
+  callback = function()
+    if vim.v.fcs_reason == "changed" or vim.v.fcs_reason == "conflict" then
+      vim.v.fcs_choice = "reload"
+    end
+  end,
+})
+
 autocmd("FileChangedShellPost", {
   group = group,
   callback = function(args)

@@ -11,7 +11,7 @@ local function in_git_repo()
   if vim.fn.isdirectory(dir) == 0 then
     dir = vim.fn.getcwd()
   end
-  return vim.system({ "git", "-C", dir, "rev-parse", "--git-dir" }):wait().code == 0
+  return vim.fs.root(dir, ".git") ~= nil
 end
 
 local function find_panel(wins)

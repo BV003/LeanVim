@@ -33,4 +33,3 @@ opt.swapfile = false
 opt.confirm = true
 
 opt.updatetime = 250
-opt.timeoutlen = 1000

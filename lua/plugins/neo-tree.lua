@@ -6,6 +6,7 @@ vim.pack.add({
 
 require("neo-tree").setup({
   close_if_last_window = true,
+  use_popups_for_input = false,
   popup_border_style = "rounded",
   default_component_configs = {
     icon = {
@@ -28,7 +29,6 @@ require("neo-tree").setup({
       ["Y"] = function(state)
         local path = state.tree:get_node():get_id()
         vim.fn.setreg("+", path)
-        vim.notify("Copied: " .. path)
       end,
     },
   },
