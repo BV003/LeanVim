@@ -13,7 +13,10 @@ opt.smartindent = true
 opt.ignorecase = true
 opt.smartcase = true
 
-opt.wrap = false
+-- 自动换行：在单词间折行，折行保持缩进（Space z 切换）
+opt.wrap = true
+opt.linebreak = true
+opt.breakindent = true
 opt.scrolloff = 8
 opt.sidescrolloff = 8
 opt.termguicolors = true
