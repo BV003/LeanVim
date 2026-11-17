@@ -1,7 +1,8 @@
 -- 顶部标签栏（类似 VSCode 的打开文件标签）：
 --   左键切换，中键或点 ×/● 关闭，点 ◆ 取消固定，右键菜单（menu_items），滚轮左右滚动标签。
 --   固定的标签排在最前，中键和 Close All 都关不掉。
---   树打开时标签从树右侧开始；放不下时围绕当前标签显示，滚动后保持滚动位置。
+--   树打开时标签从树右侧开始；放不下时围绕当前标签显示，滚动后保持滚动位置；
+--   标签排满到右边缘，放不下的那个截断显示（同 VSCode）。
 local api = vim.api
 local M = {}
 
@@ -221,8 +222,8 @@ end
 
 -- ── 渲染 ────────────────────────────────────────────────────
 
--- 计算可见范围：滚动过就从 start 往右排，否则以 start（当前标签）为中心；空余空间再往两边补
-local function visible_range(widths, start, avail, anchored)
+-- 决定首个可见标签：滚动过就从 start 往右排，否则以 start（当前标签）为中心；空余空间再往两边补
+local function first_visible(widths, start, avail, anchored)
   local first, last, used = start, start, widths[start] or 0
   local grew = true
   while grew do
@@ -234,17 +235,68 @@ local function visible_range(widths, start, avail, anchored)
       first, used, grew = first - 1, used + widths[first - 1], true
     end
   end
-  return first, last
+  return first
+end
+
+-- 从 first 起排满 space 宽度：返回最后一个完整标签的序号，以及最后剩余的宽度（给截断标签用）
+local function fill_from(widths, first, space)
+  local last, used = first - 1, 0
+  while last < #widths and used + widths[last + 1] <= space do
+    last, used = last + 1, used + widths[last + 1]
+  end
+  return last, space - used
+end
+
+-- 按显示宽度截断（keep_tail 时保留结尾部分），宽字符放不下时用空格补齐
+local function truncate(s, width, keep_tail)
+  local chars = vim.fn.split(s, "\\zs")
+  if keep_tail then
+    chars = vim.fn.reverse(chars)
+  end
+  local out, w = {}, 0
+  for _, ch in ipairs(chars) do
+    local cw = vim.fn.strdisplaywidth(ch)
+    if w + cw > width then
+      break
+    end
+    out[#out + 1], w = ch, w + cw
+  end
+  if keep_tail then
+    out = vim.fn.reverse(out)
+  end
+  local pad = string.rep(" ", width - w)
+  return keep_tail and pad .. table.concat(out) or table.concat(out) .. pad
+end
+
+local function escape(s)
+  return (s:gsub("%%", "%%%%"))
+end
+
+local function tab_hl(active)
+  return active and "%#LeanTabSel#" or "%#LeanTab#"
+end
+
+local function tab_mark(b)
+  return vim.bo[b].modified and marks.modified or (pinned[b] and marks.pinned or marks.close)
+end
+
+local function tab_plain(b, name)
+  return " " .. name .. " " .. tab_mark(b) .. " "
 end
 
 local function render_tab(b, name, active)
-  local mark = vim.bo[b].modified and marks.modified or (pinned[b] and marks.pinned or marks.close)
   local text = table.concat({
-    active and "%#LeanTabSel#" or "%#LeanTab#",
-    "%", b, "@v:lua.LeanTabClick@ ", (name:gsub("%%", "%%%%")), " %X",
-    "%", b, "@v:lua.LeanTabMark@", mark, " %X",
+    tab_hl(active),
+    "%", b, "@v:lua.LeanTabClick@ ", escape(name), " %X",
+    "%", b, "@v:lua.LeanTabMark@", tab_mark(b), " %X",
   })
-  return text, vim.fn.strdisplaywidth(" " .. name .. " " .. mark .. " ")
+  return text, vim.fn.strdisplaywidth(tab_plain(b, name))
+end
+
+-- 边缘被截断的标签（右边缘显示开头，左边缘显示结尾）：整块点击都是切换到它
+local function render_partial(b, name, active, width, keep_tail)
+  local text = truncate(tab_plain(b, name), width, keep_tail)
+  return table.concat({ tab_hl(active), "%", b, "@v:lua.LeanTabClick@", escape(text), "%X" })
 end
 
 -- 多个 tabpage 时在右侧显示编号
@@ -275,11 +327,27 @@ function M.render()
 
   local tabpages, tabpages_width = render_tabpages()
   local offset = tree_offset()
-  local avail = vim.o.columns - offset - tabpages_width
-    - vim.fn.strdisplaywidth(marks.more_left .. marks.more_right)
+  local left_w = vim.fn.strdisplaywidth(marks.more_left)
+  local right_w = vim.fn.strdisplaywidth(marks.more_right)
+  local total = vim.o.columns - offset - tabpages_width
 
+  -- 先按两侧都留出 ‹ › 决定首个标签，保证当前标签完整可见；再从它起排满剩余宽度
   local start = scroll_first and math.max(1, math.min(scroll_first, #items)) or active_idx
-  local first, last = visible_range(widths, start, avail, scroll_first ~= nil)
+  local first = first_visible(widths, start, total - left_w - right_w, scroll_first ~= nil)
+  local space = total - (first > 1 and left_w or 0)
+  local last, rest = fill_from(widths, first, space)
+  if last < #items then
+    last, rest = fill_from(widths, first, space - right_w)
+  end
+
+  -- 已排到最后一个标签：往左补满，最左侧的标签截断显示结尾，右边不留空白
+  local left_rest = 0
+  if last == #items and first > 1 then
+    while first > 1 and widths[first - 1] <= rest do
+      first, rest = first - 1, rest - widths[first - 1]
+    end
+    left_rest = first > 1 and rest or 0
+  end
   view = { first = first, last = last, count = #items }
   if scroll_first then
     scroll_first = first
@@ -289,7 +357,15 @@ function M.render()
   if first > 1 then
     parts[#parts + 1] = marks.more_left
   end
+  if left_rest > 0 then
+    local b = bufs[first - 1]
+    parts[#parts + 1] = render_partial(b, names[b], b == active, left_rest, true)
+  end
   vim.list_extend(parts, items, first, last)
+  if last < #items and rest > 0 then
+    local b = bufs[last + 1]
+    parts[#parts + 1] = render_partial(b, names[b], b == active, rest)
+  end
   parts[#parts + 1] = "%#LeanTabFill#"
   if last < #items then
     parts[#parts + 1] = marks.more_right
