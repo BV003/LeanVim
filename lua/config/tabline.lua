@@ -189,12 +189,24 @@ function M.scroll(delta)
   vim.schedule(vim.cmd.redrawtabline)
 end
 
+-- 复制文件的绝对路径到系统剪贴板
+function M.copy_path(b)
+  local path = api.nvim_buf_get_name(resolve(b))
+  if path == "" then
+    return
+  end
+  vim.fn.setreg("+", path)
+  vim.notify("Copied: " .. path)
+end
+
 -- 右键菜单项：{ 文字, 回调 }，要加菜单项就加在这里
 local function menu_items(b)
-  return {
-    { pinned[b] and "Unpin" or "Pin", function() M.toggle_pin(b) end },
-    { "Close All", M.close_unpinned },
-  }
+  local items = { { pinned[b] and "Unpin" or "Pin", function() M.toggle_pin(b) end } }
+  if api.nvim_buf_get_name(b) ~= "" then
+    items[#items + 1] = { "Copy Path", function() M.copy_path(b) end }
+  end
+  items[#items + 1] = { "Close All", M.close_unpinned }
+  return items
 end
 
 -- ── 鼠标点击（%@...@ 回调，参数：bufnr, 点击次数, 按键 l/m/r） ──
