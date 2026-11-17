@@ -4,6 +4,7 @@ require("config.options")
 require("config.keymaps")
 require("config.autocmds")
 require("config.watch")
+require("config.tabline")
 
 require("plugins.kanagawa")
 require("plugins.lualine")

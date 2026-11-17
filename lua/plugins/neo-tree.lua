@@ -44,41 +44,33 @@ require("neo-tree").setup({
   },
 })
 
-vim.cmd([[
-  nmenu 1.1 PopUp.New\ File     a
-  nmenu 1.2 PopUp.New\ Folder   A
-  nmenu 1.3 PopUp.Rename        r
-  nmenu 1.4 PopUp.-tree-sep-    <Nop>
-  nmenu 1.5 PopUp.Copy\ Path    Y
-  nmenu 1.6 PopUp.-tree-sep2-   <Nop>
-  nmenu 1.7 PopUp.Delete\ File  d
-]])
-
-local tree_items = { [[New\ File]], [[New\ Folder]], [[Rename]], [[-tree-sep-]], [[Copy\ Path]], [[-tree-sep2-]], [[Delete\ File]] }
-local default_items = {
-  [[Inspect]], [[-1-]], [[Cut]], [[Copy]], [[Paste]], [[Delete]], [[Select\ All]], [[-2-]], [[How-to\ disable\ mouse]],
-}
-local conditional_items = {
-  [[Open\ in\ web\ browser]], [[Go\ to\ definition]], [[Show\ Diagnostics]], [[Show\ All\ Diagnostics]], [[Configure\ Diagnostics]],
+-- 树的右键菜单：{ 文字, 触发的 neo-tree 按键 }，要加菜单项就加在这里
+local tree_menu = {
+  { "New File", "a" },
+  { "New Folder", "A" },
+  { "Rename", "r" },
+  { "Copy Path", "Y" },
+  { "Delete File", "d" },
 }
 
-local function set_menu(items, enabled)
-  for _, item in ipairs(items) do
-    vim.cmd("silent! amenu " .. (enabled and "enable" or "disable") .. " PopUp." .. item)
+-- 鼠标在树上右键 → 光标移到点击的节点，在鼠标旁弹出菜单；其他位置保持默认右键
+vim.keymap.set({ "n", "i" }, "<RightMouse>", function()
+  local pos = vim.fn.getmousepos()
+  if pos.winid == 0 or vim.bo[vim.api.nvim_win_get_buf(pos.winid)].filetype ~= "neo-tree" then
+    return "<RightMouse>"
   end
-end
-
-vim.api.nvim_create_autocmd("MenuPopup", {
-  group = vim.api.nvim_create_augroup("user_neotree_popup", { clear = true }),
-  callback = function()
-    local in_tree = vim.bo.filetype == "neo-tree"
-    set_menu(tree_items, in_tree)
-    set_menu(default_items, not in_tree)
-    if in_tree then
-      set_menu(conditional_items, false)
+  vim.schedule(function()
+    vim.cmd.stopinsert()
+    vim.api.nvim_set_current_win(pos.winid)
+    if pos.line > 0 then
+      vim.api.nvim_win_set_cursor(pos.winid, { pos.line, 0 })
     end
-  end,
-})
+    require("config.popup").show("NeoTree", vim.tbl_map(function(item)
+      return { item[1], function() vim.api.nvim_feedkeys(item[2], "m", false) end }
+    end, tree_menu))
+  end)
+  return ""
+end, { expr = true, desc = "File tree menu" })
 
 vim.keymap.set("n", "<leader>e", function()
   local closed_panel = require("plugins.git").close_panel_in_tab()
