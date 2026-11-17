@@ -65,4 +65,33 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- gitsigns 面板没有公开的刷新接口，借用它监听的 GitSignsChanged
+-- （actions/diff.lua 按 data.file 是否在仓库内来决定刷新）。
+-- 升级 gitsigns 后若面板不再响应外部修改，先检查这里。
+vim.api.nvim_create_autocmd("User", {
+  group = vim.api.nvim_create_augroup("user_git_panel_fs", { clear = true }),
+  pattern = "FsChanged",
+  callback = function(args)
+    if not find_panel(vim.api.nvim_list_wins()) then
+      return
+    end
+    local seen, by_dir = {}, {}
+    for _, file in ipairs(args.data.files) do
+      local dir = vim.fs.dirname(file)
+      if by_dir[dir] == nil then
+        by_dir[dir] = vim.fs.root(file, ".git") or false
+      end
+      local repo = by_dir[dir]
+      if repo and not seen[repo] then
+        seen[repo] = true
+        vim.api.nvim_exec_autocmds("User", {
+          pattern = "GitSignsChanged",
+          modeline = false,
+          data = { file = file },
+        })
+      end
+    end
+  end,
+})
+
 return M

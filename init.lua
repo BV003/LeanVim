@@ -3,6 +3,7 @@ vim.g.mapleader = " "
 require("config.options")
 require("config.keymaps")
 require("config.autocmds")
+require("config.watch")
 
 require("plugins.kanagawa")
 require("plugins.lualine")

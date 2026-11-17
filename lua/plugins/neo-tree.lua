@@ -34,7 +34,8 @@ require("neo-tree").setup({
   },
   filesystem = {
     follow_current_file = { enabled = true },
-    use_libuv_file_watcher = true,
+    -- 有全局递归 watcher 时改由 User FsChanged 驱动，避免两套监听
+    use_libuv_file_watcher = not require("config.watch").supported,
     hijack_netrw_behavior = "open_current",
     filtered_items = {
       hide_dotfiles = false,
@@ -83,3 +84,12 @@ vim.keymap.set("n", "<leader>e", function()
   local closed_panel = require("plugins.git").close_panel_in_tab()
   vim.cmd(closed_panel and "Neotree focus" or "Neotree toggle")
 end, { desc = "File tree" })
+
+vim.api.nvim_create_autocmd("User", {
+  group = vim.api.nvim_create_augroup("user_neotree_fs", { clear = true }),
+  pattern = "FsChanged",
+  callback = function()
+    -- 只刷新当前 tab 中可见的树；refresh 会同时重算 git 状态
+    require("neo-tree.sources.manager").refresh("filesystem")
+  end,
+})

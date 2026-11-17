@@ -10,13 +10,19 @@ autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
   end,
 })
 
--- 外部修改时不弹 OK/Load 提示，直接加载磁盘版本；
--- 若有未保存修改，重载可用 u 撤销找回（undoreload）。
+-- 外部修改（同 VSCode）：无未保存修改 → 静默重载；
+-- 有未保存修改 → 保留你的版本，保存时 nvim 会再确认；被删除 → 只提示。
 autocmd("FileChangedShell", {
   group = group,
-  callback = function()
-    if vim.v.fcs_reason == "changed" or vim.v.fcs_reason == "conflict" then
+  callback = function(args)
+    local name = vim.fn.fnamemodify(args.file, ":t")
+    local reason = vim.v.fcs_reason
+    if reason == "changed" then
       vim.v.fcs_choice = "reload"
+    elseif reason == "conflict" then
+      vim.notify(name .. " changed on disk; kept your unsaved edits (:e! to load disk version)", vim.log.levels.WARN)
+    elseif reason == "deleted" then
+      vim.notify(name .. " was deleted on disk", vim.log.levels.WARN)
     end
   end,
 })
