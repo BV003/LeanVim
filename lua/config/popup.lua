@@ -8,7 +8,8 @@ local actions = {} -- 菜单名 → 当前各项的回调
 function M.run(name, i)
   local fn = actions[name] and actions[name][i]
   if fn then
-    fn()
+    -- 等弹出菜单完全关闭后再执行：菜单收尾时会塞入 <C-C>，会取消回调里的确认提示（如删除文件）
+    vim.schedule(fn)
   end
 end
 
